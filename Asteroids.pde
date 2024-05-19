@@ -8,29 +8,13 @@ void setup() {
 
 void draw() {
   background(255);  // Clear the background
-
-  
+  space_ship.draw();
 }
 
 void keyPressed() {
-  if (keyMapping.containsKey(keyCode)) {
-    if (!activeKeys.contains(keyCode)) {
-      activeKeys.add(keyCode);
-    }
-  }
-  updateAcceleration();
+  space_ship.on_key_pressed();
 }
 
 void keyReleased() {
-  if (activeKeys.contains(keyCode)) {
-    activeKeys.remove(activeKeys.indexOf(keyCode));
-  }
-  updateAcceleration();
-}
-
-void updateAcceleration() {
-  acceleration.mult(0);
-  for (Integer key : activeKeys) {
-    acceleration.add(keyMapping.get(key));
-  }
+  space_ship.on_key_release();
 }
