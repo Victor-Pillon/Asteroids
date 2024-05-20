@@ -14,6 +14,8 @@ class SpaceShip {
 
   HashMap<Integer, PVector> keyMapping = new HashMap<Integer, PVector>();  // HashMap to map key codes to acceleration vectors
   ArrayList<Integer> activeKeys = new ArrayList<Integer>();  // ArrayList to store active key codes
+  ArrayList<Bullet> bullets = new ArrayList<Bullet>();
+  PVector bulletSpawn = new PVector(0, -50);
 
   SpaceShip() {
     position = new PVector(width / 2, height / 2);  // Initialize position at the center
@@ -35,18 +37,13 @@ class SpaceShip {
     // Apply friction to the velocity and rotation
     velocity.mult(friction);
     rotationVelocity *= friction;
-    
+
     // Update the angle
     rotationVelocity += rotationAcceleration;
-    
-    if(rotationVelocity > maxRotation)
-      rotationVelocity = maxRotation;
-    else if(rotationVelocity < -maxRotation)
-      rotationVelocity = -maxRotation;
-      
+    rotationVelocity = constrain(rotationVelocity, -maxRotation, maxRotation);
     rotation += rotationVelocity;
     rotation %= TWO_PI;
-    
+
     // Update the velocity and position
     velocity.add(acceleration);
     velocity.limit(maxVelocity);
@@ -70,16 +67,27 @@ class SpaceShip {
     fill(0);
     triangle(-25, 25, 25, 25, 0, -50);
     popMatrix();
-    
-    
-    println("rotation: "+ rotation);
-    println("rotation velocity: "+ rotationVelocity);
-    println("rotation acceleration: "+ rotationAcceleration);
-    println("velocity" + velocity);
+
+    //println("=-=-=-=-=-=-=-=-=-");
+    //println("rotation: "+ rotation);
+    //println("rotation velocity: "+ rotationVelocity);
+    //println("rotation acceleration: "+ rotationAcceleration);
+    //println("velocity: " + velocity);
+    //println("velocity acceleration: " + acceleration);
+    //println("position: " + position);
+
+    // Calculate the tip position
+    fill(255);
+    circle(position.x, position.y, 5);
+
+    update_position();
   }
 
   void update_position() {
-    
+    for (Bullet bullet : bullets) {
+      bullet.draw();
+    }
+
     for (Integer key : activeKeys) {
       if (key == LEFT || key == RIGHT)
       {
@@ -103,7 +111,12 @@ class SpaceShip {
         activeKeys.add(keyCode);
       }
     }
-    update_position();
+    if (keyCode == 32) {
+      PVector bulletStart = bulletSpawn.copy();
+      bulletStart.rotate(rotation);
+      bulletStart.add(position);
+      bullets.add(new Bullet(bulletStart, rotation));
+    }
   }
 
   void on_key_release() {
@@ -112,6 +125,5 @@ class SpaceShip {
     if (activeKeys.contains(keyCode)) {
       activeKeys.remove(activeKeys.indexOf(keyCode));
     }
-    update_position();
   }
 }
