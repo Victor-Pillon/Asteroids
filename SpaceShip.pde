@@ -1,21 +1,26 @@
 class SpaceShip {
+
+  // internal variables
   PVector position;
   PVector velocity;
   PVector acceleration;
   float rotationAcceleration;
   float rotationVelocity;
   float rotation;
+  HashMap<Integer, PVector> keyMapping = new HashMap<Integer, PVector>();  // HashMap to map key codes to acceleration vectors
+  ArrayList<Integer> activeKeys = new ArrayList<Integer>();  // ArrayList to store active key codes
+  ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 
+  // constants and max values
   float maxVelocity = 8;  // Maximum velocity
   float maxRotation = 0.05; // Maximum rotation
   float accelerationIncrement = 0.08;  // Increment for acceleration
   float friction = 0.95;  // Friction coefficient to slow down the ship
   float rotationIncrement = 0.001;
 
-  HashMap<Integer, PVector> keyMapping = new HashMap<Integer, PVector>();  // HashMap to map key codes to acceleration vectors
-  ArrayList<Integer> activeKeys = new ArrayList<Integer>();  // ArrayList to store active key codes
-  ArrayList<Bullet> bullets = new ArrayList<Bullet>();
-  PVector bulletSpawn = new PVector(0, -50);
+  // spawn point and texture
+  PVector bulletSpawn = new PVector(0, -25);
+  PShape space_shape;
 
   SpaceShip() {
     position = new PVector(width / 2, height / 2);  // Initialize position at the center
@@ -28,11 +33,22 @@ class SpaceShip {
     keyMapping.put(LEFT, new PVector(-rotationIncrement, 0));  // Accelerate left
     keyMapping.put(RIGHT, new PVector(rotationIncrement, 0));  // Accelerate right
 
+
+    PImage space_texture = loadImage("spaceship.png");
+    space_shape = createShape();
+    space_shape.beginShape();
+    space_shape.texture(space_texture);
+    space_shape.noStroke();
+    space_shape.vertex(-25, -25, 0, 0);
+    space_shape.vertex(25, -25, space_texture.width, 0);
+    space_shape.vertex(25, 25, space_texture.width, space_texture.height);
+    space_shape.vertex(-25, 25, 0, space_texture.height);
+    space_shape.endShape();
+    
     print("Space ship created");
   }
 
   void draw() {
-    background(0);  // Clear the background
 
     // Apply friction to the velocity and rotation
     velocity.mult(friction);
@@ -59,13 +75,8 @@ class SpaceShip {
     pushMatrix();
     translate(position.x, position.y);
     rotate(rotation);
-
-    // Draw the triangle
-    fill(150, 0, 255);  // Set the fill color
-    noStroke();  // No outline
-    triangle(-50, 50, 50, 50, 0, -50);  // Draw the main spaceship frame
-    fill(0);
-    triangle(-25, 25, 25, 25, 0, -50);
+    shape(space_shape, 0, 0);
+    
     popMatrix();
 
     //println("=-=-=-=-=-=-=-=-=-");

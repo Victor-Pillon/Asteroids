@@ -1,8 +1,6 @@
 SpaceShip space_ship;
-
 void setup() {
-  size(800, 600);  // Set the size of the canvas
-  
+  size(800, 600, P2D);  // Set the size of the canvas
   space_ship = new SpaceShip();
 }
 
