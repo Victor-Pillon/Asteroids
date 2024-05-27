@@ -20,7 +20,7 @@ class SpaceShip {
 
   // spawn point and texture
   PVector bulletSpawn = new PVector(0, -25);
-  PShape space_shape;
+  PShape space_ship;
 
   SpaceShip() {
     position = new PVector(width / 2, height / 2);  // Initialize position at the center
@@ -28,22 +28,39 @@ class SpaceShip {
     acceleration = new PVector(0, 0);  // Initialize acceleration
 
     // Map arrow keys to acceleration vectors
-    keyMapping.put(UP, new PVector(0, -accelerationIncrement));  // Accelerate forward
-    keyMapping.put(DOWN, new PVector(0, accelerationIncrement));  // Accelerate backward
+    keyMapping.put(UP, new PVector(0, accelerationIncrement));  // Accelerate forward
+    keyMapping.put(DOWN, new PVector(0, -accelerationIncrement));  // Accelerate backward
     keyMapping.put(LEFT, new PVector(-rotationIncrement, 0));  // Accelerate left
     keyMapping.put(RIGHT, new PVector(rotationIncrement, 0));  // Accelerate right
 
 
-    PImage space_texture = loadImage("spaceship.png");
-    space_shape = createShape();
-    space_shape.beginShape();
-    space_shape.texture(space_texture);
-    space_shape.noStroke();
-    space_shape.vertex(-25, -25, 0, 0);
-    space_shape.vertex(25, -25, space_texture.width, 0);
-    space_shape.vertex(25, 25, space_texture.width, space_texture.height);
-    space_shape.vertex(-25, 25, 0, space_texture.height);
-    space_shape.endShape();
+    PImage space_ship_base_texture = loadImage("Assets/SpaceShip/Ship/Bases/FullHealth.png");
+    PShape space_ship_base = createShape();
+    space_ship_base = createShape();
+    space_ship_base.beginShape();
+    space_ship_base.texture(space_ship_base_texture);
+    space_ship_base.noStroke();
+    space_ship_base.vertex(-24, -24, 0, 0);
+    space_ship_base.vertex(24, -24, space_ship_base_texture.width, 0);
+    space_ship_base.vertex(24, 24, space_ship_base_texture.width, space_ship_base_texture.height);
+    space_ship_base.vertex(-24, 24, 0, space_ship_base_texture.height);
+    space_ship_base.endShape();
+    
+    PImage space_ship_engine_texture = loadImage("Assets/SpaceShip/Ship/Engines/BaseEngine.png");
+    PShape space_ship_engine = createShape();
+    space_ship_engine = createShape();
+    space_ship_engine.beginShape();
+    space_ship_engine.texture(space_ship_engine_texture);
+    space_ship_engine.noStroke();
+    space_ship_engine.vertex(-24, -24, 0, 0);
+    space_ship_engine.vertex(24, -24, space_ship_engine_texture.width, 0);
+    space_ship_engine.vertex(24, 24, space_ship_engine_texture.width, space_ship_engine_texture.height);
+    space_ship_engine.vertex(-24, 24, 0, space_ship_engine_texture.height);
+    space_ship_engine.endShape();
+    
+    space_ship = createShape(GROUP);
+    space_ship.addChild(space_ship_base);
+    space_ship.addChild(space_ship_engine);
     
     print("Space ship created");
   }
@@ -66,26 +83,26 @@ class SpaceShip {
     position.add(velocity);
 
     // Wrap around the edges
-    if (position.x > width) position.x = 0;
-    if (position.x < 0) position.x = width;
-    if (position.y > height) position.y = 0;
-    if (position.y < 0) position.y = height;
+    //if (position.x > width) position.x = 0;
+    //if (position.x < 0) position.x = width;
+    //if (position.y > height) position.y = 0;
+    //if (position.y < 0) position.y = height;
 
     // Translate to the triangle's position
     pushMatrix();
-    translate(position.x, position.y);
+    translate(width/2, height/2);
     rotate(rotation);
-    shape(space_shape, 0, 0);
+    shape(space_ship, 0,0);
     
     popMatrix();
 
-    //println("=-=-=-=-=-=-=-=-=-");
-    //println("rotation: "+ rotation);
+    println("=-=-=-=-=-=-=-=-=-");
+    println("rotation: "+ rotation);
     //println("rotation velocity: "+ rotationVelocity);
     //println("rotation acceleration: "+ rotationAcceleration);
     //println("velocity: " + velocity);
     //println("velocity acceleration: " + acceleration);
-    //println("position: " + position);
+    println("position: " + position);
 
     // Calculate the tip position
     fill(255);
@@ -95,10 +112,6 @@ class SpaceShip {
   }
 
   void update_position() {
-    for (Bullet bullet : bullets) {
-      bullet.draw();
-    }
-
     for (Integer key : activeKeys) {
       if (key == LEFT || key == RIGHT)
       {
